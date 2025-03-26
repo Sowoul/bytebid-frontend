@@ -82,7 +82,7 @@ export default function GigDetailsPage({ params }: { params: { id: string } }) {
 
       try {
         // Make an actual API call
-        const response = await fetch('process.env.NEXT_PUBLIC_API_BASE_URL/api/gigs/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/gigs/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -278,4 +278,3 @@ export default function GigDetailsPage({ params }: { params: { id: string } }) {
     </div>
   )
 }
-

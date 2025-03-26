@@ -44,7 +44,8 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch('process.env.NEXT_PUBLIC_API_BASE_URL/api/users/oauth/connect', {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const response = await fetch(`${API_BASE_URL}/api/users/oauth/connect`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,4 +196,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-

@@ -63,7 +63,7 @@ export default function CreateGigPage() {
     }
 
     try {
-      const response = await fetch('process.env.NEXT_PUBLIC_API_BASE_URL/api/gigs/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/gigs/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,4 +172,3 @@ export default function CreateGigPage() {
     </div>
   )
 }
-

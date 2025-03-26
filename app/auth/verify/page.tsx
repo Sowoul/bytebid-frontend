@@ -34,7 +34,7 @@ export default function VerifyPage() {
     }
 
     try {
-      const response = await fetch('process.env.NEXT_PUBLIC_API_BASE_URL/api/auth/verify', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -125,4 +125,3 @@ export default function VerifyPage() {
     </div>
   )
 }
-
