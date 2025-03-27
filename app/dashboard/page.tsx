@@ -1,101 +1,190 @@
+"use client"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/use-auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PlusCircle, TrendingUp, Users, Zap } from "lucide-react"
 import Link from "next/link"
-import { DashboardStats } from "@/components/dashboard-stats"
-import { RecentGigs } from "@/components/recent-gigs"
 
 export default function DashboardPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login")
+    }
+  }, [user, loading, router])
+
+  if (loading || !user) {
+    return (
+      <div className="container py-10 flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="container py-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">Welcome back! Here's an overview of your activity.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back, {user.username}!</p>
         </div>
-        <div className="flex justify-end">
-          <Link href="/dashboard/gigs/create">
-            <Button>Create New Gig</Button>
-          </Link>
-        </div>
-      </div>
 
-      <DashboardStats />
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Complete Your Profile</CardTitle>
-            <CardDescription>Connect your social media accounts to improve your matches</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Profile Completion</span>
-                <span className="font-medium">60%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-muted">
-                <div className="h-full w-[60%] rounded-full bg-primary"></div>
-              </div>
-              <Link href="/dashboard/profile">
-                <Button variant="outline" className="w-full">
-                  Update Profile
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Update Your Tags</CardTitle>
-            <CardDescription>Add up to 5 interest tags to find better gig matches</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <div className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">#marketing</div>
-              <div className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">#fashion</div>
-              <div className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">#lifestyle</div>
-            </div>
-            <Link href="/dashboard/tags">
-              <Button variant="outline" className="w-full">
-                Manage Tags
-              </Button>
+        {user.type === "brand" ? (
+          <Button asChild>
+            <Link href="/gigs/create">
+              <PlusCircle className="mr-2 h-4 w-4" /> Post a New Gig
             </Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link href="/gigs">
+              <Zap className="mr-2 h-4 w-4" /> Find Opportunities
+            </Link>
+          </Button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {user.type === "brand" ? "Active Gigs" : "Matched Opportunities"}
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              {user.type === "brand" ? "No active gigs yet" : "No matches yet"}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Verification Status</CardTitle>
-            <CardDescription>Your account verification status</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {user.type === "brand" ? "Creator Matches" : "Brand Connections"}
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-500 mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span className="font-medium">Email Verified</span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Your account is fully verified and ready to use all features of SponSphere.
-            </div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              {user.type === "brand" ? "No creator matches yet" : "No brand connections yet"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Profile Completion</CardTitle>
+            <Zap className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">50%</div>
+            <p className="text-xs text-muted-foreground">Complete your profile to get better matches</p>
           </CardContent>
         </Card>
       </div>
 
-      <RecentGigs />
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Getting Started</CardTitle>
+              <CardDescription>Complete these steps to make the most of your experience</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-start space-x-4">
+                  <div className="bg-primary/10 p-2 rounded-full">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Complete Your Profile</h3>
+                    <p className="text-sm text-muted-foreground">Add more details to your profile to stand out</p>
+                    <Button variant="link" className="px-0" asChild>
+                      <Link href="/profile">Update Profile</Link>
+                    </Button>
+                  </div>
+                </div>
+
+                {user.type === "creator" ? (
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Zap className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Connect Social Accounts</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Link your social media accounts to showcase your work
+                      </p>
+                      <Button variant="link" className="px-0" asChild>
+                        <Link href="/profile/social">Connect Accounts</Link>
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <PlusCircle className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Post Your First Gig</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Create a gig to start finding creators for your campaign
+                      </p>
+                      <Button variant="link" className="px-0" asChild>
+                        <Link href="/gigs/create">Post a Gig</Link>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Your recent actions and updates</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6 text-muted-foreground">No recent activity to display</div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="recommendations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recommended for You</CardTitle>
+              <CardDescription>
+                {user.type === "brand"
+                  ? "Creators that match your requirements"
+                  : "Opportunities that match your skills"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6 text-muted-foreground">No recommendations available yet</div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
